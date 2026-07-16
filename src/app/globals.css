@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -7,45 +8,44 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  
   --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
+  
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) * 1.4);
   --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  
+  /* WigsCastle Brand Colors - Tailwind Classes */
+  --color-wigs-primary: #8b5cf6;
+  --color-wigs-primary-dark: #6d28d9;
+  --color-wigs-primary-light: #a78bfa;
+  --color-wigs-secondary: #d4a373;
+  --color-wigs-bg-alt: #f9f7f3;
+  --color-wigs-text-primary: #2d1b4e;
+  --color-wigs-text-secondary: #6b5280;
+  
+  /* Font Families */
+  --font-display: 'Playfair Display', serif;
+  --font-body: 'Poppins', sans-serif;
 }
 
 :root {
@@ -67,20 +67,20 @@
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+
+  /* WigsCastle Brand Colors (CSS Variables Fallback) */
+  --wigs-primary: #8b5cf6;
+  --wigs-primary-dark: #6d28d9;
+  --wigs-primary-light: #a78bfa;
+  --wigs-secondary: #d4a373;
+  --wigs-bg-alt: #f9f7f3;
+  --wigs-text-primary: #2d1b4e;
+  --wigs-text-secondary: #6b5280;
+
+  /* Fonts */
+  --font-display: 'Playfair Display', serif;
+  --font-body: 'Poppins', sans-serif;
 }
 
 .dark {
@@ -102,29 +102,123 @@
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-body);
   }
   html {
     @apply font-sans;
+  }
+}
+
+@layer components {
+  /* Display Headings */
+  .text-display-lg {
+    @apply text-5xl font-bold;
+    font-family: var(--font-display);
+    color: var(--wigs-primary-dark);
+  }
+
+  .text-display-md {
+    @apply text-4xl font-bold;
+    font-family: var(--font-display);
+    color: var(--wigs-primary-dark);
+  }
+
+  /* Section Headings */
+  .text-heading-2 {
+    @apply text-3xl font-bold;
+    font-family: var(--font-display);
+    color: var(--wigs-primary-dark);
+  }
+
+  .text-heading-3 {
+    @apply text-2xl font-semibold;
+    font-family: var(--font-display);
+    color: var(--wigs-primary-dark);
+  }
+
+  .text-heading-4 {
+    @apply text-xl font-semibold;
+    color: var(--wigs-text-primary);
+  }
+
+  /* Buttons */
+  .btn-primary {
+    @apply px-6 py-3 rounded-lg font-semibold transition-all;
+    background-color: var(--wigs-primary);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background-color: var(--wigs-primary-dark);
+    transform: translateY(-2px);
+  }
+
+  .btn-secondary {
+    @apply px-6 py-3 rounded-lg font-semibold border-2 transition-all;
+    background-color: transparent;
+    color: var(--wigs-primary);
+    border-color: var(--wigs-primary);
+  }
+
+  .btn-secondary:hover {
+    background-color: var(--wigs-primary);
+    color: white;
+  }
+
+  /* Cards */
+  .card {
+    @apply rounded-lg p-6 transition-all;
+    background-color: var(--card);
+  }
+
+  .card:hover {
+    @apply shadow-lg translate-y-[-4px];
+  }
+
+  /* Sections */
+  .section-alt {
+    @apply py-12 md:py-20;
+    background-color: var(--wigs-bg-alt);
+  }
+
+  /* Grid */
+  .grid-2 {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-8;
+  }
+
+  .grid-3 {
+    @apply grid grid-cols-1 md:grid-cols-3 gap-8;
+  }
+
+  .grid-4 {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6;
+  }
+
+  /* Badge */
+  .badge-primary {
+    @apply inline-block px-3 py-1 rounded-full text-xs font-semibold;
+    background-color: rgba(139, 92, 246, 0.1);
+    color: var(--wigs-primary-dark);
+  }
+
+  /* Utility */
+  .container-max {
+    @apply max-w-7xl mx-auto px-4;
+  }
+
+  .flex-center {
+    @apply flex items-center justify-center;
+  }
+
+  .flex-between {
+    @apply flex items-center justify-between;
   }
 }
