@@ -1,13 +1,15 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { createClient } from '@/lib/server';
+import { createClient } from '@/lib/supabase/server';
+import { useCart } from '@/context/CartContext';
+import AddToCart from '@/components/cart/AddToCart'
 
 interface ProductDetailsProps {
     params: Promise<{ id: string }>;
 }
 
 export default async function ProductDetails ({ params }: ProductDetailsProps) {
-    const { id } = await params;
+  const { id } = await params;
 
   const supabase = await createClient();
 
@@ -83,9 +85,7 @@ export default async function ProductDetails ({ params }: ProductDetailsProps) {
 
             {/* Action Buttons */}
             <div className="flex gap-4">
-              <button className="flex-1 bg-wigs-primary text-white py-3 rounded-md font-poppins font-semibold hover:bg-opacity-90 transition">
-                Add to Cart
-              </button>
+              <AddToCart  product={product} />
               <button className="flex-1 border-2 border-wigs-primary text-wigs-primary py-3 rounded-md font-poppins font-semibold hover:bg-wigs-primary hover:text-white transition">
                 Add to Wishlist
               </button>

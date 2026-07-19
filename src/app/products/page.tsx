@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/server";
+import { createClient } from "@/lib/supabase/server";
 import { ProductCard } from "@/components/ProductCard";
 
 export default async function Home() {

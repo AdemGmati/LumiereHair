@@ -1,9 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClient } from '@/lib/client'
+import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
-import { LogoutButton } from '@/components/logout-button'
+import { LogoutButton } from '@/components/login/logout-button'
 
 const center = () => {
   const [isLoading, setIsLoading] = useState(true)
