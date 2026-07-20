@@ -1,33 +1,50 @@
+'use client'
+
 import Image from 'next/image';
 import Link from "next/link";
-
-interface Product {
-    id: string;
-    name: string;
-    description: string;
-    image_url: string;
-}
+import { ShoppingBag } from 'lucide-react';
+import { useCart } from '@/context/CartContext';
+import { Product } from "@/types/product";
 
 export function ProductCard({ product }: { product: Product }) {
+    const { addToCart } = useCart();
+
     return (
         <Link href={`/products/${product.id}`}>
-            <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
-                {/* Image */}
-                <Image src={product.image_url} alt={product.name} width={400} height={400} loading="eager" />
+            <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden h-full flex flex-col">
+                {/* Image Container - Square Aspect Ratio */}
+                <div className="relative w-full aspect-square bg-wigs-bg-alt overflow-hidden group">
+                    <Image 
+                        src={product.image_url} 
+                        alt={product.name} 
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        loading="eager" 
+                    />
+                    
+                    {/* Add to Cart Button - Positioned on Image */}
+                    <button 
+                        onClick={() => addToCart(product)}
+                        className="absolute top-4 right-4 bg-white rounded-full p-2.5 shadow-md hover:shadow-lg hover:bg-wigs-bg-alt transition"
+                        aria-label="Add to cart"
+                    >
+                        <ShoppingBag size={20} className="text-wigs-primary" />
+                    </button>
+                </div>
 
                 {/* Content */}
-                <div className="p-5">
-                    <h3 className="font-playfair text-xl text-wigs-text-primary mb-2">
+                <div className="p-4 flex-1 flex flex-col">
+                    <h3 className="font-playfair text-lg text-wigs-text-primary mb-2 line-clamp-2">
                         {product.name}
                     </h3>
-                    <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+                    <p className="text-sm text-wigs-text-secondary mb-4 line-clamp-2 flex-1">
                         {product.description}
                     </p>
 
-                    {/* Action Button */}
-                    <button className="w-full bg-wigs-primary text-white py-2 rounded-md font-poppins font-medium hover:bg-opacity-90 transition">
-                        View Details
-                    </button>
+                    {/* Price */}
+                    <div className="text-lg font-poppins font-semibold text-wigs-text-primary">
+                        ${product.price.toFixed(2)} USD
+                    </div>
                 </div>
             </div>
         </Link>

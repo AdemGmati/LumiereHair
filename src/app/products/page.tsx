@@ -6,7 +6,7 @@ export default async function Home() {
 
   const { data: products, error } = await supabase
     .from("products")
-    .select("id, name, description, image_url");
+    .select("id, name, description, image_url, price");
 
   if (error) {
     console.error("Error fetching products:", error);
@@ -15,9 +15,9 @@ export default async function Home() {
 
   return (
     <main>
-      <div className="max-w-6xl mx-auto px-4 py-16">
-        <h1 className="font-playfair text-4xl mb-12">Our Products</h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="max-w-7xl mx-auto px-4 py-16">
+        <h1 className="font-playfair text-4xl text-wigs-text-primary mb-12">Our Products</h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {products?.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}

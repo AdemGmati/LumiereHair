@@ -2,6 +2,7 @@
 
 import { X, Trash2, Minus, Plus } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
+import Link from 'next/link';
 
 interface CartSliderProps {
   isOpen: boolean;
@@ -11,7 +12,7 @@ interface CartSliderProps {
 export function CartSlider({ isOpen, onClose }: CartSliderProps) {
   const { cartItems, removeItem, updateQuantity, total } = useCart();
 
-  console.log('cart',cartItems)
+  console.log('cart', cartItems)
 
   return (
     <>
@@ -26,9 +27,8 @@ export function CartSlider({ isOpen, onClose }: CartSliderProps) {
 
       {/* Slider */}
       <div
-        className={`fixed top-0 right-0 h-screen w-full max-w-md bg-white z-50 flex flex-col shadow-lg transition-transform duration-300 ease-out ${
-          isOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
+        className={`fixed top-0 right-0 h-screen w-full max-w-md bg-white z-50 flex flex-col shadow-lg transition-transform duration-300 ease-out ${isOpen ? 'translate-x-0' : 'translate-x-full'
+          }`}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-gray-200">
@@ -137,9 +137,12 @@ export function CartSlider({ isOpen, onClose }: CartSliderProps) {
               Shipping and taxes calculated at checkout
             </p>
 
-            <button className="w-full bg-wigs-primary hover:bg-opacity-90 text-white font-medium py-3 rounded-md transition-all duration-200">
+            <Link
+              href="/checkout"
+              className="w-full bg-wigs-primary hover:bg-opacity-90 text-white font-medium py-3 rounded-md transition-all duration-200 text-center block"
+            >
               Proceed to Checkout
-            </button>
+            </Link>
 
             <button
               onClick={onClose}

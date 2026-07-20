@@ -1,22 +1,22 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-
-export interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-  image_url?: string;
-}
+import { Product } from "@/types/product";
+import { CartItem } from "@/types/cart";
 
 interface CartContextType {
   cartItems: CartItem[];
-  addToCart: (item: CartItem) => void;
+
+  addToCart: (product: Product) => void;
+
   removeItem: (id: string) => void;
+
   updateQuantity: (id: string, quantity: number) => void;
+
   clearCart: () => void;
+
   total: number;
+
   itemCount: number;
 }
 
@@ -52,18 +52,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [cartItems, isLoaded]);
 
-  const addToCart = (newItem: CartItem) => {
-    
+  const addToCart = (product: Product) => {
     setCartItems((prevItems) => {
-      const existingItem = prevItems.find((item) => item.id === newItem.id);
+      const existingItem = prevItems.find((item) => item.id === product.id);
+
       if (existingItem) {
         return prevItems.map((item) =>
-          item.id === newItem.id
+          item.id === product.id
             ? { ...item, quantity: item.quantity + 1}
             : item
         );
       }
-      return [...prevItems, {...newItem, quantity: 1}];
+      return [...prevItems, {...product, quantity: 1}];
     });
   };
 

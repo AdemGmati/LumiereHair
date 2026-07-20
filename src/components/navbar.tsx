@@ -33,12 +33,12 @@ export default function Navbar() {
 
   const navLinks = [
     { name: 'HOME', href: '/' },
-    { name: 'HAIR SHOP', href: '/hair-shop' },
-    { name: 'WIGS', href: '/wigs' },
-    { name: 'CLIP-INS', href: '/clip-ins' },
-    { name: 'NEW ARRIVALS', href: '/new-arrivals' },
-    { name: 'SALE', href: '/sale' },
-    { name: 'BLOG', href: '/blog' },
+    { name: 'HAIR SHOP', href: '/products' },
+    { name: 'WIGS', href: '/products' },
+    { name: 'CLIP-INS', href: '/products' },
+    { name: 'NEW ARRIVALS', href: '/products' },
+    { name: 'SALE', href: '/products' },
+    { name: 'BLOG', href: '/products' },
   ];
 
   return (
