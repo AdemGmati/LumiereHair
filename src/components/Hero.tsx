@@ -27,15 +27,15 @@ const features = [
 export default function Hero() {
   return (
     <section className="w-full bg-wigs-bg-alt">
-      <div className="relative w-full overflow-hidden aspect-9/16 sm:aspect-4/3 lg:aspect-video">
+      <div className="relative w-full overflow-hidden aspect-9/16 sm:aspect-4/3 lg:aspect-16/9">
 
         {/* Mobile background */}
         <Image
-          src="/background-mobile.png"
+          src="/hero.png"
           alt="Woman wearing long, wavy luxury hair extensions"
           fill
           priority
-          sizes="100vw"
+          sizes="w-screen"
           className="object-cover sm:hidden"
         />
 
@@ -45,17 +45,17 @@ export default function Hero() {
           alt="Woman wearing long, wavy luxury hair extensions"
           fill
           priority
-          sizes="100vw"
+          sizes="w-screen"
           className="hidden object-cover sm:block lg:hidden"
         />
 
         {/* Desktop background */}
         <Image
-          src="/background-image.png"
+          src="/hero.png"
           alt="Woman wearing long, wavy luxury hair extensions"
           fill
           priority
-          sizes="100vw"
+          sizes="w-screen"
           className="hidden object-cover lg:block"
         />
 
