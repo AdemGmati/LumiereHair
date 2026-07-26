@@ -107,8 +107,22 @@ export function CheckoutProvider({ children }: { children: ReactNode }) {
     selectedLength: string | null = null,
     selectedColor: ProductColor | null = null
   ) => {
+    const resolvedLength = selectedLength ?? '18"';
+    const resolvedColor = selectedColor ?? {
+      id: "default",
+      label: "Standard",
+      hex: "#e8dcc8",
+    };
+
     setSource("buy-now");
-    setBuyNowItem({ ...product, quantity, selectedLength, selectedColor });
+    setBuyNowItem({
+      ...product,
+      quantity,
+      selected_lenght: resolvedLength,
+      selected_colors: resolvedColor.label,
+      selectedLength: resolvedLength,
+      selectedColor: resolvedColor,
+    });
     router.push("/checkout");
   };
 
