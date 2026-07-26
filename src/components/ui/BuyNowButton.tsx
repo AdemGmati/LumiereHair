@@ -7,11 +7,10 @@ import { ArrowRight } from 'lucide-react';
 import { useState } from 'react';
 
 interface BuyNowButtonProps {
-  productId: string;
   product: Product;
 }
 
-export default function BuyNowButton({ productId, product }: BuyNowButtonProps) {
+export default function BuyNowButton({ product }: BuyNowButtonProps) {
   const router = useRouter();
   const { addToCart } = useCart();
   const [isLoading, setIsLoading] = useState(false);

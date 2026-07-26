@@ -3,6 +3,7 @@
 import { X, Trash2, Minus, Plus } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface CartSliderProps {
   isOpen: boolean;
@@ -12,7 +13,7 @@ interface CartSliderProps {
 export function CartSlider({ isOpen, onClose }: CartSliderProps) {
   const { cartItems, removeItem, updateQuantity, total } = useCart();
 
-  console.log('cart', cartItems)
+  console.log(cartItems, 'slider')
 
   return (
     <>
@@ -57,16 +58,18 @@ export function CartSlider({ isOpen, onClose }: CartSliderProps) {
             <div className="space-y-6">
               {cartItems.map((item) => (
                 <div
-                  key={item.id}
+                  key={`${item.id}-${item.selected_lenght}-${item.selected_colors}`}
                   className="flex gap-4 pb-6 border-b border-gray-200"
                 >
                   {/* Item Image */}
-                  <div className="w-20 h-20 rounded-md bg-wigs-bg-alt flex items-center justify-center shrink-0">
+                  <div className="relative flex h-20 w-20 shrink-0 items-center justify-center rounded-md bg-wigs-bg-alt">
                     {item.image_url ? (
-                      <img
+                      <Image
                         src={item.image_url}
                         alt={item.name}
-                        className="w-full h-full object-cover rounded-md"
+                        fill
+                        sizes="80px"
+                        className="object-cover rounded-md"
                       />
                     ) : (
                       <span className="text-xs text-gray-400 text-center">Product</span>
@@ -75,9 +78,12 @@ export function CartSlider({ isOpen, onClose }: CartSliderProps) {
 
                   {/* Item Details */}
                   <div className="flex-1">
-                    <h3 className="font-medium text-sm text-wigs-text-primary mb-2">
+                    <h3 className="font-medium text-sm text-wigs-text-primary mb-1">
                       {item.name}
                     </h3>
+                    <p className="text-xs text-wigs-text-secondary mb-2">
+                      {item.selected_lenght} · {item.selected_colors}
+                    </p>
                     <p className="text-wigs-primary font-semibold text-sm mb-3">
                       ${item.price.toFixed(2)}
                     </p>
@@ -85,7 +91,14 @@ export function CartSlider({ isOpen, onClose }: CartSliderProps) {
                     {/* Quantity Controls */}
                     <div className="flex items-center gap-2 mb-3">
                       <button
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        onClick={() =>
+                          updateQuantity(
+                            item.id,
+                            item.selected_lenght,
+                            item.selected_colors,
+                            item.quantity - 1
+                          )
+                        }
                         className="p-1 hover:bg-gray-100 rounded transition-colors"
                         aria-label="Decrease quantity"
                       >
@@ -95,7 +108,14 @@ export function CartSlider({ isOpen, onClose }: CartSliderProps) {
                         {item.quantity}
                       </span>
                       <button
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                        onClick={() =>
+                          updateQuantity(
+                            item.id,
+                            item.selected_lenght,
+                            item.selected_colors,
+                            item.quantity + 1
+                          )
+                        }
                         className="p-1 hover:bg-gray-100 rounded transition-colors"
                         aria-label="Increase quantity"
                       >
@@ -110,7 +130,9 @@ export function CartSlider({ isOpen, onClose }: CartSliderProps) {
 
                     {/* Remove Button */}
                     <button
-                      onClick={() => removeItem(item.id)}
+                      onClick={() =>
+                        removeItem(item.id, item.selected_lenght, item.selected_colors)
+                      }
                       className="text-red-500 hover:text-red-700 text-xs flex items-center gap-1 transition-colors"
                     >
                       <Trash2 size={14} />

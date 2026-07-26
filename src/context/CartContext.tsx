@@ -1,17 +1,25 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react';
 import { Product } from "@/types/product";
 import { CartItem } from "@/types/cart";
 
 interface CartContextType {
   cartItems: CartItem[];
 
-  addToCart: (product: Product) => void;
+  addToCart: (
+    product: Product,
+    options: { selected_lenght: string; selected_colors: string }
+  ) => void;
 
-  removeItem: (id: string) => void;
+  removeItem: (id: string, selected_lenght: string, selected_colors: string) => void;
 
-  updateQuantity: (id: string, quantity: number) => void;
+  updateQuantity: (
+    id: string,
+    selected_lenght: string,
+    selected_colors: string,
+    quantity: number
+  ) => void;
 
   clearCart: () => void;
 
@@ -25,60 +33,99 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 const STORAGE_KEY = 'wigs_cart';
 
 export function CartProvider({ children }: { children: ReactNode }) {
+  // Start empty on both the server and client. Reading storage during the first
+  // client render would make the navbar's badge differ from the server markup.
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const hasHydratedCart = useRef(false);
 
-  // Load from localStorage on mount
   useEffect(() => {
     try {
       const savedCart = localStorage.getItem(STORAGE_KEY);
-      if (savedCart) {
-        setCartItems(JSON.parse(savedCart));
-      }
+      const savedItems: CartItem[] = savedCart ? JSON.parse(savedCart) : [];
+
+      // Defer the update until after the initial hydrated render.
+      queueMicrotask(() => {
+        hasHydratedCart.current = true;
+        setCartItems(savedItems);
+      });
     } catch (error) {
       console.error('Failed to load cart from localStorage:', error);
+      hasHydratedCart.current = true;
     }
-    setIsLoaded(true);
   }, []);
 
   // Save to localStorage whenever cart changes
   useEffect(() => {
-    if (isLoaded) {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(cartItems));
-      } catch (error) {
-        console.error('Failed to save cart to localStorage:', error);
-      }
-    }
-  }, [cartItems, isLoaded]);
+    if (!hasHydratedCart.current) return;
 
-  const addToCart = (product: Product) => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(cartItems));
+    } catch (error) {
+      console.error('Failed to save cart to localStorage:', error);
+    }
+  }, [cartItems]);
+
+  const addToCart = (
+    product: Product,
+    options: { selected_lenght: string; selected_colors: string }
+  ) => {
+    const { selected_lenght, selected_colors } = options;
+
     setCartItems((prevItems) => {
-      const existingItem = prevItems.find((item) => item.id === product.id);
+      const existingItem = prevItems.find(
+        (item) =>
+          item.id === product.id &&
+          item.selected_lenght === selected_lenght &&
+          item.selected_colors === selected_colors
+      );
 
       if (existingItem) {
         return prevItems.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1}
+          item.id === product.id &&
+          item.selected_lenght === selected_lenght &&
+          item.selected_colors === selected_colors
+            ? { ...item, quantity: item.quantity + 1 }
             : item
         );
       }
-      return [...prevItems, {...product, quantity: 1}];
+
+      return [
+        ...prevItems,
+        { ...product, selected_lenght, selected_colors, quantity: 1 },
+      ];
     });
   };
 
-  const removeItem = (id: string) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
+  const removeItem = (id: string, selected_lenght: string, selected_colors: string) => {
+    setCartItems((prevItems) =>
+      prevItems.filter(
+        (item) =>
+          !(
+            item.id === id &&
+            item.selected_lenght === selected_lenght &&
+            item.selected_colors === selected_colors
+          )
+      )
+    );
   };
 
-  const updateQuantity = (id: string, quantity: number) => {
+  const updateQuantity = (
+    id: string,
+    selected_lenght: string,
+    selected_colors: string,
+    quantity: number
+  ) => {
     if (quantity <= 0) {
-      removeItem(id);
+      removeItem(id, selected_lenght, selected_colors);
       return;
     }
     setCartItems((prevItems) =>
       prevItems.map((item) =>
-        item.id === id ? { ...item, quantity } : item
+        item.id === id &&
+        item.selected_lenght === selected_lenght &&
+        item.selected_colors === selected_colors
+          ? { ...item, quantity }
+          : item
       )
     );
   };

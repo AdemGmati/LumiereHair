@@ -5,13 +5,13 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { LogoutButton } from '@/components/login/logout-button'
 
-const center = () => {
+const Center = () => {
   const [isLoading, setIsLoading] = useState(true)
-  const supabase = createClient()
   const router = useRouter()
 
   useEffect(() => {
     const checkAuth = async () => {
+      const supabase = createClient()
       const { data } = await supabase.auth.getUser()
       
       if (!data.user) {
@@ -21,7 +21,7 @@ const center = () => {
     }
     
     checkAuth()
-  }, [])
+  }, [router])
 
   if (isLoading) return <div>Loading...</div>
 
@@ -33,4 +33,4 @@ const center = () => {
   )
 }
 
-export default center
+export default Center

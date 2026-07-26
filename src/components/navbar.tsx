@@ -1,173 +1,19 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
-import Link from 'next/link';
-import { CartSlider } from '@/components/cart/CartSlider';
-import { Search, ShoppingCart, User, Menu, X, ChevronDown } from 'lucide-react';
+import Link from "next/link";
+import { Heart, Menu, Search, ShoppingCart, User, X } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { CartSlider } from "@/components/cart/CartSlider";
+import { useCart } from "@/context/CartContext";
+import { createClient } from "@/lib/supabase/client";
 
+const navigation = [["Home", "/"], ["Shop All", "/products"], ["Clip-Ins", "/products?cat=clip-ins"], ["Ponytails", "/products?cat=ponytails"], ["Tape", "/products?cat=tape"], ["New", "/products?badge=new"], ["Sale", "/products?badge=sale"]] as const;
+
+/** Reference-matched responsive header retaining existing Supabase auth and cart entry points. */
 export default function Navbar() {
-  const router = useRouter()
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [user, setUser] = useState<any>(null)
-  const supabase = createClient()
-
-  useEffect(() => {
-    const checkUser = async () => {
-      const { data } = await supabase.auth.getUser()
-      setUser(data.user)
-    }
-    checkUser()
-  }, [])
-  
-  const handleUserClick = () => {
-    if (user) {
-      router.push('/user/center')
-    } else {
-      router.push('/user/login')
-    }
-  }
-
-  const navLinks = [
-    { name: 'HOME', href: '/' },
-    { name: 'HAIR SHOP', href: '/products' },
-    { name: 'WIGS', href: '/products' },
-    { name: 'CLIP-INS', href: '/products' },
-    { name: 'NEW ARRIVALS', href: '/products' },
-    { name: 'SALE', href: '/products' },
-    { name: 'BLOG', href: '/products' },
-  ];
-
-  return (
-    <>
-      <CartSlider isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
-      
-      <nav className="bg-white border-b border-wigs-bg-alt">
-        {/* Top Bar */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
-            {/* Logo */}
-            <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-              <div className="w-10 h-10 bg-wigs-primary rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-lg">L</span>
-              </div>
-              <span className="text-xl font-bold text-wigs-primary-dark hidden sm:inline" style={{ fontFamily: 'var(--font-display)' }}>
-                Lumière hair
-              </span>
-            </Link>
-
-            {/* Search Bar - Desktop */}
-            <div className="hidden md:flex flex-1 max-w-md mx-8">
-              <div className="relative w-full">
-                <input
-                  type="text"
-                  placeholder="Search"
-                  className="w-full px-4 py-2 bg-wigs-bg-alt rounded-lg text-sm text-wigs-text-primary placeholder-wigs-text-secondary focus:outline-none focus:ring-2 focus:ring-wigs-primary"
-                />
-                <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-wigs-text-secondary w-4 h-4" />
-              </div>
-            </div>
-
-            {/* Right Actions */}
-            <div className="flex items-center gap-4">
-              {/* Currency Selector */}
-              <button className="hidden sm:flex items-center gap-1 text-sm font-medium text-wigs-text-primary hover:text-wigs-primary transition">
-                USD
-                <ChevronDown className="w-4 h-4" />
-              </button>
-
-              {/* Cart Icon */}
-              <button
-                onClick={() => setIsCartOpen(true)}
-                className="relative p-2 text-wigs-text-primary hover:text-wigs-primary transition"
-                aria-label="Open shopping cart"
-              >
-                <ShoppingCart className="w-5 h-5" />
-                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-              </button>
-
-              {/* Account Icon */}
-              <button
-                onClick={handleUserClick}
-                className="p-2 text-wigs-text-primary hover:text-wigs-primary transition cursor-pointer"
-              >
-                <User className="w-5 h-5" />
-              </button>
-
-              {/* Mobile Search Button */}
-              <button
-                onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className="md:hidden p-2 text-wigs-text-primary hover:text-wigs-primary"
-              >
-                <Search className="w-5 h-5" />
-              </button>
-
-              {/* Mobile Menu Button */}
-              <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="md:hidden p-2 text-wigs-text-primary hover:text-wigs-primary"
-              >
-                {isOpen ? (
-                  <X className="w-6 h-6" />
-                ) : (
-                  <Menu className="w-6 h-6" />
-                )}
-              </button>
-            </div>
-          </div>
-
-          {/* Mobile Search Bar */}
-          {isSearchOpen && (
-            <div className="md:hidden pb-4">
-              <div className="relative w-full">
-                <input
-                  type="text"
-                  placeholder="Search"
-                  className="w-full px-4 py-2 bg-wigs-bg-alt rounded-lg text-sm text-wigs-text-primary placeholder-wigs-text-secondary focus:outline-none focus:ring-2 focus:ring-wigs-primary"
-                />
-                <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-wigs-text-secondary w-4 h-4" />
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Navigation Menu */}
-        <div className="border-t border-wigs-bg-alt">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            {/* Desktop Menu - Centered */}
-            <div className="hidden md:flex items-center justify-center gap-8 h-14">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  className="text-sm font-medium text-wigs-text-primary hover:text-wigs-primary transition whitespace-nowrap"
-                >
-                  {link.name}
-                </Link>
-              ))}
-            </div>
-
-            {/* Mobile Menu */}
-            {isOpen && (
-              <div className="md:hidden py-4 space-y-3">
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.name}
-                    href={link.href}
-                    className="block text-sm font-medium text-wigs-text-primary hover:text-wigs-primary py-2 transition"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    {link.name}
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      </nav>
-    </>
-  );
+  const pathname = usePathname(); const router = useRouter(); const { itemCount } = useCart(); const [cartOpen, setCartOpen] = useState(false); const [menuOpen, setMenuOpen] = useState(false); const [signedIn, setSignedIn] = useState(false); const [search, setSearch] = useState("");
+  useEffect(() => { createClient().auth.getUser().then(({ data }) => setSignedIn(Boolean(data.user))); }, []);
+  const submitSearch = (event: React.KeyboardEvent<HTMLInputElement>) => { if (event.key === "Enter") router.push(`/products${search.trim() ? `?q=${encodeURIComponent(search.trim())}` : ""}`); };
+  return <><div className="flex min-h-9 items-center justify-center bg-[#311b43] px-4 text-center text-xs tracking-[.04em] text-white/90">Complimentary shipping on orders <strong className="mx-1 font-semibold text-violet-300">over $150</strong> · Use code <strong className="ml-1 font-semibold text-violet-300">LUMIERE20</strong> for 20% off your first order</div><header className="sticky top-0 z-40 border-b border-[#ebe6f1] bg-white/92 backdrop-blur"><div className="mx-auto grid min-h-[72px] max-w-[1200px] grid-cols-[1fr_auto] items-center gap-4 px-5 md:grid-cols-[1fr_auto_1fr]"><div className="flex items-center gap-1.5"><button onClick={() => setMenuOpen(true)} className="grid size-10 place-items-center md:hidden" aria-label="Open menu"><Menu className="size-5" /></button><Link href="/" className="flex items-center gap-2 font-display text-2xl font-semibold tracking-tight"><span className="grid size-[34px] place-items-center rounded-[10px] bg-linear-to-br from-violet-500 to-violet-700 text-white shadow-lg">L</span><span>Lumière Hair</span></Link></div><label className="relative hidden w-[min(420px,100%)] md:block"><Search className="absolute left-4 top-1/2 size-4 -translate-y-1/2 text-[#796782]" /><input type="search" value={search} onChange={(event) => setSearch(event.target.value)} onKeyDown={submitSearch} placeholder="Search extensions…" aria-label="Search" className="w-full rounded-full border border-[#ebe6f1] bg-[#f8f8fc] py-2.5 pr-4 pl-10 text-sm outline-none focus:border-violet-400" /></label><div className="flex items-center justify-end gap-1"><button onClick={() => router.push(signedIn ? "/user/center" : "/user/login")} className="grid size-[42px] place-items-center rounded-full hover:bg-[#f8f8fc] hover:text-violet-500" aria-label="Account"><User className="size-5" /></button><button className="hidden size-[42px] place-items-center rounded-full hover:bg-[#f8f8fc] hover:text-violet-500 sm:grid" aria-label="Wishlist"><Heart className="size-5" /></button><button onClick={() => setCartOpen(true)} className="relative grid size-[42px] place-items-center rounded-full hover:bg-[#f8f8fc] hover:text-violet-500" aria-label="Open bag"><ShoppingCart className="size-5" />{itemCount > 0 && <span className="absolute right-0 top-0 grid min-w-[18px] place-items-center rounded-full bg-violet-500 px-1 text-[10px] text-white">{itemCount}</span>}</button></div></div><nav className="hidden border-t border-[#ebe6f1] md:block" aria-label="Primary"><div className="mx-auto flex max-w-[1200px] justify-center overflow-auto px-5">{navigation.map(([label, href]) => <Link key={label} href={href} className={`border-b-2 px-4 py-3 text-[13px] font-medium uppercase tracking-[.04em] ${pathname === "/products" && label === "Shop All" ? "border-violet-500 text-violet-500" : "border-transparent text-[#796782] hover:text-violet-500"}`}>{label}</Link>)}</div></nav></header><div className={`fixed inset-0 z-50 flex flex-col gap-1 bg-white p-5 transition-transform md:hidden ${menuOpen ? "translate-x-0" : "-translate-x-full"}`}><div className="mb-6 flex items-center justify-between"><Link href="/" onClick={() => setMenuOpen(false)} className="font-display text-2xl font-semibold">Lumière Hair</Link><button onClick={() => setMenuOpen(false)} className="grid size-10 place-items-center" aria-label="Close menu"><X /></button></div>{navigation.slice(0, 5).map(([label, href]) => <Link key={label} href={href} onClick={() => setMenuOpen(false)} className="border-b border-[#ebe6f1] px-2 py-4 text-[15px] font-semibold">{label}</Link>)}</div><CartSlider isOpen={cartOpen} onClose={() => setCartOpen(false)} /></>;
 }
