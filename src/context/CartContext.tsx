@@ -9,7 +9,7 @@ interface CartContextType {
 
   addToCart: (
     product: Product,
-    options: { selected_lenght: string; selected_colors: string }
+    options?: { selected_lenght: string; selected_colors: string }
   ) => void;
 
   removeItem: (id: string, selected_lenght: string, selected_colors: string) => void;
@@ -67,9 +67,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const addToCart = (
     product: Product,
-    options: { selected_lenght: string; selected_colors: string }
+    options?: { selected_lenght: string; selected_colors: string }
   ) => {
-    const { selected_lenght, selected_colors } = options;
+    const selected_lenght = options?.selected_lenght ?? '18"';
+    const selected_colors = options?.selected_colors ?? 'Standard';
 
     setCartItems((prevItems) => {
       const existingItem = prevItems.find(

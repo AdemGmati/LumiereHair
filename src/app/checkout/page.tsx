@@ -140,12 +140,6 @@ export default function CheckoutPage() {
                   ({itemCount})
                 </span>
               </h2>
-              <Link
-                href="/cart"
-                className="rounded-full border border-[#e5e0f0] px-3 py-1 text-xs font-semibold text-[#8b5cf6] hover:border-[#8b5cf6]"
-              >
-                Edit
-              </Link>
             </div>
 
             <ul className="space-y-4">

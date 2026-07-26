@@ -5,7 +5,12 @@ import Link from "next/link";
 import { Heart, ShoppingCart, Star } from "lucide-react";
 import { useState } from "react";
 import { useCart } from "@/context/CartContext";
-import { formatPrice, getProductCategory } from "@/lib/products";
+import {
+  formatPrice,
+  getProductCategory,
+  getProductColors,
+  getProductLengths,
+} from "@/lib/products";
 import type { Product } from "@/types/product";
 
 interface ProductTileProps {
@@ -21,6 +26,10 @@ export function ProductTile({ product }: ProductTileProps) {
   const rating = Number(product.rating ?? 4.8);
   const reviews = product.reviews ?? 0;
   const badge = product.badge?.toLowerCase();
+  const lengths = getProductLengths(product);
+  const colors = getProductColors(product);
+  const defaultLength = lengths[0];
+  const defaultColor = colors[0]?.label ?? "Standard";
 
   return (
     <article className="group overflow-hidden rounded-[14px] border border-[#ebe6f1] bg-white shadow-[0_8px_30px_rgb(49_27_67/0.06)] transition-shadow hover:shadow-[0_18px_50px_rgb(49_27_67/0.1)]">
@@ -100,7 +109,12 @@ export function ProductTile({ product }: ProductTileProps) {
 
           <button
             type="button"
-            onClick={() => addToCart(product)}
+            onClick={() =>
+              addToCart(product, {
+                selected_lenght: defaultLength,
+                selected_colors: defaultColor,
+              })
+            }
             className="grid size-9 place-items-center rounded-full border border-[#ebe6f1] transition hover:border-violet-400 hover:bg-violet-50 hover:text-violet-600"
             aria-label={`Add ${product.name} to bag`}
           >

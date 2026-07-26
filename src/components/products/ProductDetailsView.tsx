@@ -39,7 +39,10 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
   // Handlers
   const addQuantity = () => {
     for (let index = 0; index < quantity; index += 1) {
-      addToCart(product);
+      addToCart(product, {
+        selected_lenght: length,
+        selected_colors: color.label,
+      });
     }
   };
 
