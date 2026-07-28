@@ -44,7 +44,6 @@ export function ShopCatalog({ products }: ShopCatalogProps) {
       .sort((a, b) => {
         if (sort === "price-asc") return a.price - b.price;
         if (sort === "price-desc") return b.price - a.price;
-        if (sort === "rating") return Number(b.rating ?? 0) - Number(a.rating ?? 0);
         if (sort === "newest") return Number(b.badge === "new") - Number(a.badge === "new");
         return 0;
       });
@@ -224,7 +223,6 @@ export function ShopCatalog({ products }: ShopCatalogProps) {
                 <option value="newest">Newest</option>
                 <option value="price-asc">Price: Low to High</option>
                 <option value="price-desc">Price: High to Low</option>
-                <option value="rating">Top rated</option>
               </select>
             </div>
           </div>
