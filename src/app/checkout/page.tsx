@@ -7,7 +7,10 @@
  *   - source === "buy-now"          → the single snapshot item from Product Details
  *   - source === "cart" / no source → live cartItems from CartContext
  *
- * Wire handleContinue() to your order logic before payment.
+ * No login required: /api/orders writes with the Supabase service-role key,
+ * so guests can place an order without an account. On success we redirect to
+ * a public confirmation page instead of an account page, so nothing here
+ * ever requires a session.
  */
 
 import Image from "next/image";
@@ -19,7 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCheckout, type CheckoutItem } from "@/context/CheckoutContext";
-import { useCart } from "@/context/CartContext"; // adjust to wherever your CartContext lives
+import { useCart } from "@/context/CartContext";
 
 const FREE_SHIPPING_THRESHOLD = 150;
 const TAX_RATE = 0.08;
@@ -40,8 +43,8 @@ const FIELDS: { name: FieldName; label: string; placeholder: string; type?: stri
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { source, buyNowItem } = useCheckout();
-  const { cartItems } = useCart();
+  const { source, buyNowItem, clear: clearCheckout } = useCheckout();
+  const { cartItems, clearCart } = useCart();
 
   // Buy-now checkouts use the single snapshot item taken from the product
   // page. Everything else — including a plain refresh with no explicit
@@ -58,6 +61,8 @@ export default function CheckoutPage() {
     state: "",
     zip: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const updateField =
     (field: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -69,9 +74,77 @@ export default function CheckoutPage() {
   const tax = subtotal * TAX_RATE;
   const total = subtotal + shipping + tax;
 
-  const handleContinue = (e: React.SyntheticEvent) => {
-    e.preventDefault();
-    router.push("/checkout/payment");
+  const handlePlaceOrder = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSubmitError(null);
+
+    if (items.length === 0) {
+      setSubmitError("Your checkout is empty.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          first_name: form.firstName.trim(),
+          last_name: form.lastName.trim(),
+          email: form.email.trim(),
+          phone: form.phone.trim(),
+          city: form.city.trim(),
+          state: form.state.trim(),
+          zip_code: form.zip.trim(),
+          items: items.map((item) => ({
+            product_id: item.id,
+            quantity: item.quantity,
+            selected_color: item.selectedColor?.label ?? item.selected_colors ?? null,
+            selected_length: item.selectedLength ?? item.selected_lenght ?? null,
+            unit_price: item.price,
+          })),
+        }),
+      });
+
+      const textBody = await response.text();
+      let result: { error?: string; success?: boolean; order_id?: string | number } | null =
+        null;
+
+      try {
+        result = textBody ? JSON.parse(textBody) : null;
+      } catch {
+        result = null;
+      }
+
+      if (!response.ok) {
+        const serverMessage = result?.error || textBody || `HTTP ${response.status}`;
+        throw new Error(serverMessage);
+      }
+
+      clearCart();
+      clearCheckout();
+
+      // Guests have no account, so we never send them to /user/center —
+      // that route requires a session. This one doesn't.
+      const confirmationUrl = result?.order_id
+        ? `/checkout/confirmation?order=${encodeURIComponent(String(result.order_id))}`
+        : "/checkout/confirmation";
+
+      router.push(confirmationUrl);
+    } catch (error) {
+      const errorDetails =
+        error instanceof Error
+          ? error.message
+          : typeof error === "object"
+          ? JSON.stringify(error, Object.getOwnPropertyNames(error), 2)
+          : String(error);
+
+      console.error("Failed to place order", error, errorDetails);
+      setSubmitError(`We couldn't place your order. ${errorDetails}`);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (items.length === 0) {
@@ -106,7 +179,8 @@ export default function CheckoutPage() {
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_400px]">
           <form
-            onSubmit={handleContinue}
+            id="checkout-form"
+            onSubmit={handlePlaceOrder}
             className="rounded-[28px] border border-[#efeaf9] bg-white p-6 shadow-[0_8px_30px_-12px_rgba(139,92,246,0.18)] sm:p-8"
           >
             <p className="text-xs font-bold uppercase tracking-wide text-[#8b5cf6]">
@@ -130,6 +204,12 @@ export default function CheckoutPage() {
                 </Field>
               ))}
             </div>
+
+            {submitError ? (
+              <p className="mt-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+                {submitError}
+              </p>
+            ) : null}
           </form>
 
           <aside className="h-fit rounded-[28px] border border-[#efeaf9] bg-white p-6 shadow-[0_8px_30px_-12px_rgba(139,92,246,0.18)] lg:sticky lg:top-6">
@@ -179,11 +259,6 @@ export default function CheckoutPage() {
                         </span>
                       )}
                     </div>
-                    {item.sku && (
-                      <p className="mt-1.5 font-mono text-[10px] uppercase tracking-wide text-[#6b5280]/70">
-                        SKU · {item.sku}
-                      </p>
-                    )}
                   </div>
 
                   <p className="shrink-0 text-sm font-semibold text-[#2d1b4e]">
@@ -225,10 +300,12 @@ export default function CheckoutPage() {
             </div>
 
             <Button
-              onClick={handleContinue}
-              className="mt-6 w-full rounded-2xl bg-[#2d1b4e] py-6 text-sm font-bold uppercase tracking-wide text-white hover:bg-[#241640]"
+              type="submit"
+              form="checkout-form"
+              disabled={isSubmitting}
+              className="mt-6 w-full rounded-2xl bg-[#2d1b4e] py-6 text-sm font-bold uppercase tracking-wide text-white hover:bg-[#241640] disabled:cursor-not-allowed disabled:opacity-70"
             >
-              Continue to Payment
+              {isSubmitting ? "Placing order..." : "Place order"}
             </Button>
 
             <p className="mt-5 flex items-center gap-1.5 border-t border-[#efeaf9] pt-4 text-xs text-[#6b5280]">

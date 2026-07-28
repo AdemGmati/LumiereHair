@@ -1,5 +1,5 @@
 import { ShopCatalog } from "@/components/products/ShopCatalog";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/client";
 import type { Product } from "@/types/product";
 
 /** Server-rendered shop page. Product data remains in Supabase, never in the UI source. */

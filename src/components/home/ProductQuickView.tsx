@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
 import { ShoppingBag, Zap, Check, Minus, Plus } from "lucide-react";
 import { useCart } from "@/context/CartContext";
+import { getProductColors, getProductLengths } from "@/lib/products";
 import { cn } from "@/lib/utils";
 import { Product, ProductColor } from "@/types/product";
 
@@ -14,33 +15,29 @@ interface ProductQuickViewProps {
   trigger?: React.ReactElement;
 }
 
-const DEFAULT_LENGTHS = ['14"', '16"', '18"', '20"', '22"', '24"'];
-
-const DEFAULT_COLORS: ProductColor[] = [
-  { id: "natural-black", label: "Natural Black", hex: "#1b1b1b" },
-  { id: "chestnut-brown", label: "Chestnut Brown", hex: "#5b3a29" },
-  { id: "chocolate", label: "Chocolate", hex: "#3c2415" },
-  { id: "honey-blonde", label: "Honey Blonde", hex: "#c99a4b" },
-];
 
 export default function ProductQuickView({ product, trigger }: ProductQuickViewProps) {
   const { addToCart } = useCart();
   const router = useRouter();
+  const lengths = getProductLengths(product);
+  const colors = getProductColors(product);
 
   const [open, setOpen] = useState(false);
   const [quantity, setQuantity] = useState(1);
 
-  const lengths = product.lengths?.length ? product.lengths : DEFAULT_LENGTHS;
-  const colors = product.colors?.length ? product.colors : DEFAULT_COLORS;
 
-  const [selectedLength, setSelectedLength] = useState(lengths[0]);
-  const [selectedColor, setSelectedColor] = useState<ProductColor>(colors[0]);
+
+  const [selectedLength, setSelectedLength] = useState<string>(lengths[0] ?? '18"');
+  const [selectedColor, setSelectedColor] = useState<ProductColor | null>(colors[0] ?? null);
 
   const addProductToCart = () => {
+    const resolvedLength = selectedLength || lengths[0] || '18"';
+    const resolvedColor = selectedColor ?? colors[0] ?? { id: 'default', label: 'Standard', hex: '#e8dcc8' };
+
     for (let i = 0; i < quantity; i += 1) {
       addToCart(product, {
-        selected_lenght: selectedLength,
-        selected_colors: selectedColor.label,
+        selected_lenght: resolvedLength,
+        selected_colors: resolvedColor.label,
       });
     }
   };
@@ -75,10 +72,14 @@ export default function ProductQuickView({ product, trigger }: ProductQuickViewP
           </>
         )}
       </DialogTrigger>
-
-      <DialogContent className="w-full max-w-[96vw] bg-white p-0 shadow-[0_30px_80px_rgba(124,58,237,0.15)] sm:max-w-275">
-        <div className="grid min-h-[520px] grid-cols-1 overflow-hidden rounded-[2rem] bg-white lg:grid-cols-[1.45fr_1.05fr]">
-          <div className="relative h-80 w-full overflow-hidden sm:h-[520px] lg:h-auto">
+      <DialogContent
+        className={cn(
+          "w-full max-w-[96vw] bg-white p-0 shadow-[0_30px_80px_rgba(124,58,237,0.15)] sm:max-w-275",
+          "max-h-[90dvh] overflow-y-auto overscroll-contain"
+        )}
+      >
+        <div className="grid grid-cols-1 overflow-hidden rounded-[2rem] bg-white lg:min-h-[520px] lg:grid-cols-[1.45fr_1.05fr]">
+          <div className="relative h-56 w-full overflow-hidden sm:h-72 lg:h-auto">
             <Image
               src={product.image_url}
               alt={product.name}
@@ -125,7 +126,7 @@ export default function ProductQuickView({ product, trigger }: ProductQuickViewP
               <div className="space-y-3 rounded-3xl border border-purple-100 bg-purple-50/70 p-4">
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-sm font-semibold uppercase tracking-[0.15em] text-purple-700">Color</p>
-                  <span className="text-sm font-medium text-purple-900">{selectedColor.label}</span>
+                  <span className="text-sm font-medium text-purple-900">{selectedColor?.label ?? "Standard"}</span>
                 </div>
                 <div className="flex flex-wrap gap-3">
                   {colors.map((color) => (
@@ -137,13 +138,13 @@ export default function ProductQuickView({ product, trigger }: ProductQuickViewP
                       aria-label={color.label}
                       className={cn(
                         'relative h-11 w-11 rounded-full transition focus:outline-none',
-                        selectedColor.id === color.id
+                        selectedColor?.id === color.id
                           ? 'ring-4 ring-purple-500 ring-offset-2 ring-offset-white'
                           : 'ring-1 ring-purple-200'
                       )}
                       style={{ backgroundColor: color.hex }}
                     >
-                      {selectedColor.id === color.id && (
+                      {selectedColor?.id === color.id && (
                         <Check className="absolute inset-0 m-auto h-4 w-4 text-white drop-shadow" />
                       )}
                     </button>

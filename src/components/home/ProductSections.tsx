@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Heart, Plus } from "lucide-react";
-import { useCart } from "@/context/CartContext";
 import type { Product } from "@/types/product";
 import { useEffect, useState } from 'react';
 import { getProducts } from '@/lib/products';
@@ -12,13 +11,13 @@ import  ProductQuickView  from "@/components/home/ProductQuickView";
 
 
 function ProductCard({ product }: { product: Product }) {
-  const { addToCart } = useCart();
 
   return (
     <article className="group flex overflow-hidden rounded-2xl border bg-white transition hover:-translate-y-0.5 hover:border-violet-300/50 hover:shadow-[0_8px_30px_rgb(49_27_67/.06)]">
       <div className="flex min-w-0 flex-1 flex-col">
         {/* Image & Badges */}
-        <div className="relative aspect-square overflow-hidden bg-linear-to-b from-[#f4f1fa] to-[#ebe6f5]">
+        <Link className="relative aspect-square overflow-hidden bg-linear-to-b from-[#f4f1fa] to-[#ebe6f5]"
+          href={`/products/${product.id}`}>
           <Image
             src={product.image_url}
             alt={product.name}
@@ -42,7 +41,7 @@ function ProductCard({ product }: { product: Product }) {
           >
             <Heart className="size-4" />
           </button>
-        </div>
+        </Link>
 
         {/* Product Details */}
         <div className="flex flex-1 flex-col p-4">
@@ -57,10 +56,6 @@ function ProductCard({ product }: { product: Product }) {
             {product.name}
           </Link>
 
-          <p className="mt-1 flex items-center gap-1 text-xs text-[#796782]">
-            <span className="tracking-wider text-yellow-500">★★★★★</span>
-            {product.rating} ({product.reviews})
-          </p>
 
           <div className="mt-auto flex items-center justify-between gap-2 pt-3">
             <span className="font-mono text-sm font-medium">
@@ -112,7 +107,6 @@ export function ProductSections() {
     return <div>Loading...</div>;
   }
 
-  console.log(products)
   return (
     <>
       <section className="mx-auto max-w-300 px-5 pb-16">

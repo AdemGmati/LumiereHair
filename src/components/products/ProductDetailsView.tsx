@@ -46,8 +46,6 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
     }
   };
 
-  const rating = Number(product.rating ?? 4.8);
-
   return (
     <main className="mx-auto max-w-300 px-5 py-8 pb-16">
       {/* Breadcrumb Navigation */}
@@ -123,12 +121,6 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
           <h1 className="font-display text-4xl font-semibold leading-[1.12] tracking-tight md:text-5xl">
             {product.name}
           </h1>
-
-          {/* Reviews Rating */}
-          <p className="mt-3 flex items-center gap-1 text-sm text-[#796782]">
-            <Star className="size-4 fill-violet-500 text-violet-500" />{" "}
-            {rating.toFixed(1)} ({product.reviews ?? 0} reviews)
-          </p>
 
           {/* Price Block */}
           <div className="my-4 flex items-baseline gap-3">

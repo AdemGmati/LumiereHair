@@ -13,8 +13,6 @@ interface CartSliderProps {
 export function CartSlider({ isOpen, onClose }: CartSliderProps) {
   const { cartItems, removeItem, updateQuantity, total } = useCart();
 
-  console.log(cartItems, 'slider')
-
   return (
     <>
       {/* Overlay */}
@@ -161,7 +159,8 @@ export function CartSlider({ isOpen, onClose }: CartSliderProps) {
 
             <Link
               href="/checkout"
-              className="w-full bg-wigs-primary hover:bg-opacity-90 text-white font-medium py-3 rounded-md transition-all duration-200 text-center block"
+              onClick={onClose}
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 rounded-md transition-all duration-200 text-center block"
             >
               Proceed to Checkout
             </Link>

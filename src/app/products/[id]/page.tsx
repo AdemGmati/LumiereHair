@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ProductDetailsView } from "@/components/products/ProductDetailsView";
 import { ProductTile } from "@/components/products/ProductTile";
 import { getProductCategory } from "@/lib/products";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/client";
 import type { Product } from "@/types/product";
 
 /** Dynamic Supabase product page with an interactive gallery and purchase controls. */
