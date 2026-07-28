@@ -23,8 +23,6 @@ export function ProductTile({ product }: ProductTileProps) {
   const [saved, setSaved] = useState(false);
 
   // Derived values
-  const rating = Number(product.rating ?? 4.8);
-  const reviews = product.reviews ?? 0;
   const badge = product.badge?.toLowerCase();
   const lengths = getProductLengths(product);
   const colors = getProductColors(product);
@@ -89,12 +87,6 @@ export function ProductTile({ product }: ProductTileProps) {
         >
           {product.name}
         </Link>
-
-        {/* Star Rating & Review Count */}
-        <p className="mt-1 flex items-center gap-1 text-xs text-[#796782]">
-          <Star className="size-3 fill-violet-500 text-violet-500" />{" "}
-          {rating.toFixed(1)} · {reviews}
-        </p>
 
         {/* Price & Add to Cart Action */}
         <div className="mt-3 flex items-center justify-between gap-2">
