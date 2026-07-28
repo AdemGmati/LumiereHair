@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { getProductCategory } from "@/lib/products";
 import type { Product } from "@/types/product";
 import { ProductTile } from "./ProductTile";
+import { useLanguage } from "@/i18n/LanguageProvider";
 
 interface ShopCatalogProps {
   products: Product[];
@@ -12,6 +13,7 @@ interface ShopCatalogProps {
 
 /** Interactive client-side filters preserve server-fetched Supabase catalogue data. */
 export function ShopCatalog({ products }: ShopCatalogProps) {
+  const { t, locale } = useLanguage();
   // State for UI overlay, search, and active filter criteria
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -23,7 +25,7 @@ export function ShopCatalog({ products }: ShopCatalogProps) {
   // Dynamically extract up to 3 unique category choices from products
   const categoryOptions = useMemo(
     () =>
-      Array.from(new Set(products.map(getProductCategory))).slice(0, 3),
+      Array.from(new Set(products.map((product) => getProductCategory(product)))).slice(0, 3),
     [products]
   );
 
@@ -74,25 +76,25 @@ export function ShopCatalog({ products }: ShopCatalogProps) {
           <button
             className="fixed inset-0 z-60 bg-[#311b43]/40 lg:hidden"
             onClick={() => setFiltersOpen(false)}
-            aria-label="Close filters"
+            aria-label={t("common.closeMenu") as string}
           />
         )}
 
         {/* Sidebar Filters */}
         <aside
-          className={`fixed inset-y-0 left-0 z-70 w-[min(320px,90vw)] overflow-y-auto border-r border-[#ebe6f1] bg-white p-5 shadow-[0_18px_50px_rgb(49_27_67/0.1)] transition-transform lg:sticky lg:top-36 lg:z-0 lg:w-auto lg:translate-x-0 lg:rounded-2xl lg:border lg:shadow-none ${
-            filtersOpen ? "translate-x-0" : "-translate-x-full"
+          className={`fixed inset-y-0 start-0 z-70 w-[min(320px,90vw)] overflow-y-auto border-e border-[#ebe6f1] bg-white p-5 shadow-[0_18px_50px_rgb(49_27_67/0.1)] transition-transform lg:sticky lg:top-36 lg:z-0 lg:w-auto lg:translate-x-0 lg:rounded-2xl lg:border lg:shadow-none ${
+            filtersOpen ? "translate-x-0" : locale === "ar" ? "translate-x-full" : "-translate-x-full"
           }`}
         >
           {/* Header */}
           <div className="mb-1 flex items-center justify-between">
             <h2 className="text-[13px] font-bold uppercase tracking-[.08em]">
-              Filters
+              {t("products.catalog.filters") as string}
             </h2>
             <button
               className="grid size-10 place-items-center lg:hidden"
               onClick={() => setFiltersOpen(false)}
-              aria-label="Close filters"
+              aria-label={t("common.closeMenu") as string}
             >
               <X className="size-5" />
             </button>
@@ -100,7 +102,7 @@ export function ShopCatalog({ products }: ShopCatalogProps) {
 
           {/* Category Filter */}
           <div className="border-t border-[#ebe6f1] py-4">
-            <h3 className="mb-3 text-[13px] font-semibold">Category</h3>
+            <h3 className="mb-3 text-[13px] font-semibold">{t("products.catalog.category") as string}</h3>
             {categoryOptions.map((category) => (
               <label
                 key={category}
@@ -119,7 +121,7 @@ export function ShopCatalog({ products }: ShopCatalogProps) {
 
           {/* Price Range Filter */}
           <div className="border-t border-[#ebe6f1] py-4">
-            <h3 className="mb-3 text-[13px] font-semibold">Price</h3>
+            <h3 className="mb-3 text-[13px] font-semibold">{t("products.catalog.price") as string}</h3>
             <div className="grid grid-cols-2 gap-2">
               <input
                 type="number"
@@ -155,12 +157,12 @@ export function ShopCatalog({ products }: ShopCatalogProps) {
 
           {/* Offer Badges Filter */}
           <div className="border-t border-[#ebe6f1] py-4">
-            <h3 className="mb-3 text-[13px] font-semibold">Offers</h3>
+            <h3 className="mb-3 text-[13px] font-semibold">{t("products.catalog.offers") as string}</h3>
             {[
-              ["", "All"],
-              ["new", "New arrivals"],
-              ["sale", "On sale"],
-              ["bestseller", "Bestsellers"],
+              ["", t("products.catalog.allOffers") as string],
+              ["new", t("products.catalog.newArrivals") as string],
+              ["sale", t("products.catalog.onSale") as string],
+              ["bestseller", t("products.catalog.bestsellers") as string],
             ].map(([value, label]) => (
               <label
                 key={label}
@@ -184,7 +186,7 @@ export function ShopCatalog({ products }: ShopCatalogProps) {
             onClick={clear}
             className="mt-3 min-h-10 w-full rounded-full border border-[#ebe6f1] text-xs font-semibold uppercase tracking-[.06em] transition hover:border-violet-400 hover:text-violet-600"
           >
-            Clear all
+            {t("products.catalog.clearAll") as string}
           </button>
         </aside>
 
@@ -194,7 +196,7 @@ export function ShopCatalog({ products }: ShopCatalogProps) {
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <p className="text-sm text-[#796782]">
               <strong className="text-[#311b43]">{filtered.length}</strong>{" "}
-              products
+              {t("products.catalog.productsCount") as string}
             </p>
 
             <div className="flex flex-wrap gap-2">
@@ -203,14 +205,14 @@ export function ShopCatalog({ products }: ShopCatalogProps) {
                 className="inline-flex min-h-10.5 items-center gap-2 rounded-full border border-[#ebe6f1] px-4 text-[13px] font-semibold lg:hidden"
               >
                 <Filter className="size-4" />
-                Filters
+                {t("products.catalog.filters") as string}
               </button>
 
               <input
                 type="search"
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search products…"
+                placeholder={t("products.catalog.searchPlaceholder") as string}
                 className="min-h-10.5 rounded-full border border-[#ebe6f1] bg-white px-4 text-[13px] outline-none focus:border-violet-400"
               />
 
@@ -219,10 +221,10 @@ export function ShopCatalog({ products }: ShopCatalogProps) {
                 onChange={(event) => setSort(event.target.value)}
                 className="min-h-10.5 rounded-full border border-[#ebe6f1] bg-white px-4 text-[13px] outline-none focus:border-violet-400"
               >
-                <option value="featured">Featured</option>
-                <option value="newest">Newest</option>
-                <option value="price-asc">Price: Low to High</option>
-                <option value="price-desc">Price: High to Low</option>
+                <option value="featured">{t("products.catalog.featured") as string}</option>
+                <option value="newest">{t("products.catalog.newest") as string}</option>
+                <option value="price-asc">{t("products.catalog.priceAsc") as string}</option>
+                <option value="price-desc">{t("products.catalog.priceDesc") as string}</option>
               </select>
             </div>
           </div>
@@ -237,9 +239,9 @@ export function ShopCatalog({ products }: ShopCatalogProps) {
           ) : (
             <div className="py-12 text-center text-[#796782]">
               <h2 className="font-display text-3xl font-semibold text-[#311b43]">
-                No matches
+                {t("products.catalog.noMatches") as string}
               </h2>
-              <p>Try adjusting filters or search.</p>
+              <p>{t("products.catalog.tryAdjusting") as string}</p>
             </div>
           )}
         </div>

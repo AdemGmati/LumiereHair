@@ -4,6 +4,7 @@ import { X, Trash2, Minus, Plus } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useLanguage } from '@/i18n/LanguageProvider';
 
 interface CartSliderProps {
   isOpen: boolean;
@@ -12,6 +13,7 @@ interface CartSliderProps {
 
 export function CartSlider({ isOpen, onClose }: CartSliderProps) {
   const { cartItems, removeItem, updateQuantity, total } = useCart();
+  const { t, locale } = useLanguage();
 
   return (
     <>
@@ -26,18 +28,18 @@ export function CartSlider({ isOpen, onClose }: CartSliderProps) {
 
       {/* Slider */}
       <div
-        className={`fixed top-0 right-0 h-screen w-full max-w-md bg-white z-50 flex flex-col shadow-lg transition-transform duration-300 ease-out ${isOpen ? 'translate-x-0' : 'translate-x-full'
+        className={`fixed top-0 end-0 h-screen w-full max-w-md bg-white z-50 flex flex-col shadow-lg transition-transform duration-300 ease-out ${isOpen ? 'translate-x-0' : locale === 'ar' ? '-translate-x-full' : 'translate-x-full'
           }`}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-gray-200">
           <h2 className="text-lg font-semibold text-wigs-text-primary" style={{ fontFamily: 'var(--font-display)' }}>
-            Your Cart
+            {t('cart.title') as string}
           </h2>
           <button
             onClick={onClose}
             className="p-1 hover:bg-gray-100 rounded-md transition-colors"
-            aria-label="Close cart"
+            aria-label={t('common.closeMenu') as string}
           >
             <X size={24} className="text-wigs-text-primary" />
           </button>
@@ -47,9 +49,9 @@ export function CartSlider({ isOpen, onClose }: CartSliderProps) {
         <div className="flex-1 overflow-y-auto px-6 py-6">
           {cartItems.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
-              <p className="text-wigs-text-secondary">Your cart is empty</p>
+              <p className="text-wigs-text-secondary">{t('cart.empty') as string}</p>
               <p className="text-gray-400 text-sm mt-1">
-                Start adding some beautiful wigs!
+                {t('cart.emptyCopy') as string}
               </p>
             </div>
           ) : (
@@ -70,7 +72,7 @@ export function CartSlider({ isOpen, onClose }: CartSliderProps) {
                         className="object-cover rounded-md"
                       />
                     ) : (
-                      <span className="text-xs text-gray-400 text-center">Product</span>
+                      <span className="text-xs text-gray-400 text-center">{t('common.products') as string}</span>
                     )}
                   </div>
 
@@ -98,7 +100,7 @@ export function CartSlider({ isOpen, onClose }: CartSliderProps) {
                           )
                         }
                         className="p-1 hover:bg-gray-100 rounded transition-colors"
-                        aria-label="Decrease quantity"
+                        aria-label={t('common.decreaseQuantity') as string}
                       >
                         <Minus size={16} className="text-wigs-text-secondary" />
                       </button>
@@ -115,7 +117,7 @@ export function CartSlider({ isOpen, onClose }: CartSliderProps) {
                           )
                         }
                         className="p-1 hover:bg-gray-100 rounded transition-colors"
-                        aria-label="Increase quantity"
+                        aria-label={t('common.increaseQuantity') as string}
                       >
                         <Plus size={16} className="text-wigs-text-secondary" />
                       </button>
@@ -123,7 +125,7 @@ export function CartSlider({ isOpen, onClose }: CartSliderProps) {
 
                     {/* Subtotal */}
                     <p className="text-xs text-wigs-text-secondary mb-3">
-                      Subtotal: ${(item.price * item.quantity).toFixed(2)}
+                      {t('common.subtotal') as string}: ${(item.price * item.quantity).toFixed(2)}
                     </p>
 
                     {/* Remove Button */}
@@ -134,7 +136,7 @@ export function CartSlider({ isOpen, onClose }: CartSliderProps) {
                       className="text-red-500 hover:text-red-700 text-xs flex items-center gap-1 transition-colors"
                     >
                       <Trash2 size={14} />
-                      Remove
+                      {t('cart.remove') as string}
                     </button>
                   </div>
                 </div>
@@ -147,14 +149,14 @@ export function CartSlider({ isOpen, onClose }: CartSliderProps) {
         {cartItems.length > 0 && (
           <div className="border-t border-gray-200 px-6 py-6 space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-wigs-text-secondary">Subtotal</span>
+              <span className="text-sm text-wigs-text-secondary">{t('cart.subtotal') as string}</span>
               <span className="font-semibold text-lg text-wigs-text-primary">
                 ${total.toFixed(2)}
               </span>
             </div>
 
             <p className="text-xs text-wigs-text-secondary">
-              Shipping and taxes calculated at checkout
+              {t('cart.shippingNotice') as string}
             </p>
 
             <Link
@@ -162,14 +164,14 @@ export function CartSlider({ isOpen, onClose }: CartSliderProps) {
               onClick={onClose}
               className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 rounded-md transition-all duration-200 text-center block"
             >
-              Proceed to Checkout
+              {t('cart.proceedToCheckout') as string}
             </Link>
 
             <button
               onClick={onClose}
               className="w-full bg-gray-100 hover:bg-gray-200 text-wigs-text-primary font-medium py-3 rounded-md transition-colors duration-200"
             >
-              Continue Shopping
+              {t('cart.continueShopping') as string}
             </button>
           </div>
         )}

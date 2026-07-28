@@ -1,30 +1,22 @@
-import { Clock3, ShieldCheck, Truck, BadgeCheck } from "lucide-react";
+"use client";
 
-const items = [
-  [
-    ShieldCheck,
-    "Original products",
-    "Authenticated Remy hair with a money-back guarantee if quality falls short.",
-  ],
-  [
-    BadgeCheck,
-    "Satisfaction promise",
-    "Not delighted? We’ll make it right — exchanges within 30 days.",
-  ],
-  [
-    Clock3,
-    "New arrivals weekly",
-    "Fresh tones and lengths curated for the season’s most-worn looks.",
-  ],
-  [
-    Truck,
-    "Free standard shipping",
-    "Complimentary delivery on orders over $150 — worldwide tracked.",
-  ],
-] as const;
+import { Clock3, ShieldCheck, Truck, BadgeCheck } from "lucide-react";
+import { useLanguage } from "@/i18n/LanguageProvider";
+
+const iconMap = {
+  ShieldCheck,
+  BadgeCheck,
+  Clock3,
+  Truck,
+} as const;
 
 /** Four concise service promises sit directly beneath the hero. */
 export function TrustRow() {
+  const { t } = useLanguage();
+  const items = ((t("home.trust.items") as Array<{ title: string; copy: string }>) ?? []).map((item, index) => {
+    const icons = [ShieldCheck, BadgeCheck, Clock3, Truck] as const;
+    return [icons[index], item.title, item.copy] as const;
+  });
   return (
     <section className="mx-auto max-w-300 px-5 py-10">
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

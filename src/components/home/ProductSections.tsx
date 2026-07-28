@@ -5,12 +5,14 @@ import Link from "next/link";
 import { Heart, Plus } from "lucide-react";
 import type { Product } from "@/types/product";
 import { useEffect, useState } from 'react';
-import { getProducts } from '@/lib/products';
+import { getProducts, formatPrice } from '@/lib/products';
 import { SectionHeading } from "./SectionHeading";
 import  ProductQuickView  from "@/components/home/ProductQuickView";
+import { useLanguage } from "@/i18n/LanguageProvider";
 
 
 function ProductCard({ product }: { product: Product }) {
+  const { locale, tStr } = useLanguage();
 
   return (
     <article className="group flex overflow-hidden rounded-2xl border bg-white transition hover:-translate-y-0.5 hover:border-violet-300/50 hover:shadow-[0_8px_30px_rgb(49_27_67/.06)]">
@@ -36,8 +38,8 @@ function ProductCard({ product }: { product: Product }) {
           )}
 
           <button
-            aria-label={`Save ${product.name}`}
-            className="absolute right-3 top-3 grid size-9 place-items-center rounded-full bg-white/90 text-[#796782] opacity-100 shadow-sm transition hover:text-violet-500 md:opacity-0 md:group-hover:opacity-100"
+            aria-label={tStr("common.saveProduct", { name: product.name })}
+            className="absolute end-3 top-3 grid size-9 place-items-center rounded-full bg-white/90 text-[#796782] opacity-100 shadow-sm transition hover:text-violet-500 md:opacity-0 md:group-hover:opacity-100"
           >
             <Heart className="size-4" />
           </button>
@@ -59,10 +61,10 @@ function ProductCard({ product }: { product: Product }) {
 
           <div className="mt-auto flex items-center justify-between gap-2 pt-3">
             <span className="font-mono text-sm font-medium">
-              ${product.price}
+              {formatPrice(product.price, locale)}
               {product.original_price && (
-                <del className="ml-1.5 font-body text-xs font-normal text-[#796782]">
-                  ${product.original_price}
+                <del className="ms-1.5 font-body text-xs font-normal text-[#796782]">
+                  {formatPrice(product.original_price, locale)}
                 </del>
               )}
             </span>
@@ -71,7 +73,7 @@ function ProductCard({ product }: { product: Product }) {
               product={product}
               trigger={
                 <button
-                  aria-label={`Add ${product.name} to bag`}
+                  aria-label={tStr("common.addProductToBag", { name: product.name })}
                   className="grid size-9.5 place-items-center rounded-full border bg-[#f8f8fc] transition hover:border-violet-500 hover:bg-violet-500 hover:text-white"
                 >
                   <Plus className="size-4" />
@@ -97,6 +99,7 @@ function Grid({ list }: { list: Product[] }) {
 
 /** Product data stays local for a fast, complete storefront presentation before catalog data loads. */
 export function ProductSections() {
+  const { t, tStr } = useLanguage();
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
@@ -104,23 +107,23 @@ export function ProductSections() {
   }, []);
 
   if (!products.length) {
-    return <div>Loading...</div>;
+    return <div className="flex min-h-[20vh] items-center justify-center">{tStr("common.loading")}</div>;
   }
 
   return (
     <>
       <section className="mx-auto max-w-300 px-5 pb-16">
-        <SectionHeading eyebrow="Curated" title="Featured products" />
+        <SectionHeading eyebrow={t("home.products.eyebrowCurated") as string} title={t("home.products.titleFeatured") as string} />
         <Grid list={products.slice(0, 4)} />
       </section>
 
       <section className="mx-auto max-w-300 px-5 pb-16">
-        <SectionHeading eyebrow="Most loved" title="Best sellers" />
+        <SectionHeading eyebrow={t("home.products.eyebrowLoved") as string} title={t("home.products.titleBestSellers") as string} />
         <Grid list={[products[0], products[3], products[6]].filter(Boolean)} />
       </section>
 
       <section className="mx-auto max-w-300 px-5 pb-16">
-        <SectionHeading eyebrow="Just in" title="New & on sale" />
+        <SectionHeading eyebrow={t("home.products.eyebrowNew") as string} title={t("home.products.titleNew") as string} />
         <Grid
           list={products.filter(
             (p) => p.badge === "New" || p.badge === "Sale"

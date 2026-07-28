@@ -6,6 +6,7 @@ import { Check, Minus, Plus, ShieldCheck, Star, Truck } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
+import { useLanguage } from "@/i18n/LanguageProvider";
 import {
   formatPrice,
   getProductCategory,
@@ -23,6 +24,7 @@ interface ProductDetailsViewProps {
 export function ProductDetailsView({ product }: ProductDetailsViewProps) {
   const router = useRouter();
   const { addToCart } = useCart();
+  const { t } = useLanguage();
 
   // Helper selectors
   const images = getProductImages(product);
@@ -51,11 +53,11 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
       {/* Breadcrumb Navigation */}
       <nav className="mb-6 flex flex-wrap gap-2 text-[13px] text-[#796782]">
         <Link href="/" className="hover:text-violet-500">
-          Home
+          {t("products.details.home") as string}
         </Link>
         <span>/</span>
         <Link href="/products" className="hover:text-violet-500">
-          Shop
+          {t("products.details.shop") as string}
         </Link>
         <span>/</span>
         <Link href="/products" className="hover:text-violet-500">
@@ -81,7 +83,7 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                     ? "border-violet-500"
                     : "border-[#ebe6f1]"
                   }`}
-                aria-label={`View image ${index + 1}`}
+                aria-label={`${t("common.viewProduct") as string} ${index + 1}`}
               >
                 <Image
                   src={image}
@@ -98,7 +100,7 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
           <button
             onClick={() => setZoomed((value) => !value)}
             className="relative aspect-square overflow-hidden rounded-[18px] border border-[#ebe6f1] bg-linear-to-b from-[#f6f3fb] to-[#ebe5f5]"
-            title="Click to zoom"
+            title={t("products.details.clickToZoom") as string}
           >
             <Image
               src={images[imageIndex]}
@@ -141,7 +143,7 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
           {/* Option: Length Selector */}
           <div className="mb-5">
             <p className="mb-2 text-xs font-bold uppercase tracking-[.08em]">
-              Length{" "}
+              {t("products.details.length") as string}{" "}
               <span className="normal-case font-normal tracking-normal text-[#796782]">
                 {length}
               </span>
@@ -165,7 +167,7 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
           {/* Option: Color Swatches */}
           <div className="mb-5">
             <p className="mb-2 text-xs font-bold uppercase tracking-[.08em]">
-              Color{" "}
+              {t("products.details.color") as string}{" "}
               <span className="normal-case font-normal tracking-normal text-[#796782]">
                 {color.label}
               </span>
@@ -193,7 +195,7 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
               <button
                 onClick={() => setQuantity((value) => Math.max(1, value - 1))}
                 className="grid size-11 place-items-center hover:bg-[#f8f8fc]"
-                aria-label="Decrease quantity"
+                aria-label={t("common.decreaseQuantity") as string}
               >
                 <Minus className="size-4" />
               </button>
@@ -203,13 +205,13 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
               <button
                 onClick={() => setQuantity((value) => Math.min(10, value + 1))}
                 className="grid size-11 place-items-center hover:bg-[#f8f8fc]"
-                aria-label="Increase quantity"
+                aria-label={t("common.increaseQuantity") as string}
               >
                 <Plus className="size-4" />
               </button>
             </div>
             <span className="text-[13px] text-[#796782]">
-              In stock · ships in 1–2 days
+              {t("products.details.inStock") as string}
             </span>
           </div>
 
@@ -219,7 +221,7 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
               onClick={addQuantity}
               className="min-h-12 rounded-full bg-violet-500 px-6 text-[13px] font-semibold uppercase tracking-[.06em] text-white shadow-[0_8px_22px_rgb(139_92_246/0.35)] transition hover:bg-violet-700"
             >
-              Add to bag
+              {t("common.addToBag") as string}
             </button>
             <button
               onClick={() => {
@@ -228,7 +230,7 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
               }}
               className="min-h-12 rounded-full bg-[#311b43] px-6 text-[13px] font-semibold uppercase tracking-[.06em] text-white transition hover:bg-violet-700"
             >
-              Buy now
+              {t("common.buyNow") as string}
             </button>
           </div>
 
@@ -236,15 +238,15 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
           <ul className="space-y-2 border-t border-[#ebe6f1] pt-4 text-[13px] text-[#796782]">
             <li className="flex items-center gap-2">
               <ShieldCheck className="size-4 text-violet-500" />
-              100% Remy human hair
+              {t("products.details.valueHighlights.0") as string}
             </li>
             <li className="flex items-center gap-2">
               <Check className="size-4 text-violet-500" />
-              Free exchanges within 30 days
+              {t("products.details.valueHighlights.1") as string}
             </li>
             <li className="flex items-center gap-2">
               <Truck className="size-4 text-violet-500" />
-              Free shipping over $150
+              {t("products.details.valueHighlights.2") as string}
             </li>
           </ul>
         </section>

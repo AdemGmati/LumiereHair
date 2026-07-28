@@ -28,8 +28,8 @@ export async function getProducts() {
  * Normalizes optional product metadata while keeping the Supabase schema flexible.
  * Returns the product category or defaults to "Extensions".
  */
-export function getProductCategory(product: Product): string {
-  return product.category?.trim() || "Extensions";
+export function getProductCategory(product: Product, locale?: string): string {
+  return product.category?.trim() || (locale === "ar" ? "الإضافات" : "Extensions");
 }
 
 /**
@@ -52,10 +52,11 @@ export function getProductLengths(product: Product): string[] {
 /**
  * Supplies a neutral, accessible color option when a product has no color metadata.
  */
-export function getProductColors(product: Product): ProductColor[] {
+export function getProductColors(product: Product, locale?: string): ProductColor[] {
+  const standardLabel = locale === "ar" ? "قياسي" : "Standard";
   return product.colors?.length
     ? product.colors
-    : [{ id: "default", label: "Standard", hex: "#e8dcc8" }];
+    : [{ id: "default", label: standardLabel, hex: "#e8dcc8" }];
 }
 
 // ============================================================================
@@ -65,8 +66,9 @@ export function getProductColors(product: Product): ProductColor[] {
 /**
  * Formats a raw numerical price into USD currency format (e.g., $19.99).
  */
-export function formatPrice(price: number): string {
-  return new Intl.NumberFormat("en-US", {
+export function formatPrice(price: number, locale?: string): string {
+  const intlLocale = locale === "ar" ? "ar-SA" : "en-US";
+  return new Intl.NumberFormat(intlLocale, {
     style: "currency",
     currency: "USD",
   }).format(price);

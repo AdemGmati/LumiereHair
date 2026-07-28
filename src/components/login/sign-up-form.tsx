@@ -16,6 +16,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import Link from 'next/link'
+import { useLanguage } from '@/i18n/LanguageProvider'
 
 export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
   const [email, setEmail] = useState('')
@@ -24,6 +25,7 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
+  const { t } = useLanguage()
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -32,7 +34,7 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
     setError(null)
 
     if (password !== repeatPassword) {
-      setError('Passwords do not match')
+      setError(t('auth.passwordsMismatch') as string)
       setIsLoading(false)
       return
     }
@@ -45,7 +47,7 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
       if (error) throw error
       router.push('/user/center')
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : 'An error occurred')
+      setError(error instanceof Error ? error.message : t('auth.errorFallback') as string)
     } finally {
       setIsLoading(false)
     }
@@ -55,18 +57,18 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
     <div className={cn('flex flex-col gap-6', className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">Sign up</CardTitle>
-          <CardDescription>Create a new account</CardDescription>
+          <CardTitle className="text-2xl">{t('auth.signUpTitle') as string}</CardTitle>
+          <CardDescription>{t('auth.signUpSubtitle') as string}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignUp}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t('common.email') as string}</Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="m@example.com"
+                  placeholder={t('common.emailPlaceholder') as string}
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -74,7 +76,7 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password">{t('common.password') as string}</Label>
                 </div>
                 <Input
                   id="password"
@@ -86,7 +88,7 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
-                  <Label htmlFor="repeat-password">Repeat Password</Label>
+                  <Label htmlFor="repeat-password">{t('common.repeatPassword') as string}</Label>
                 </div>
                 <Input
                   id="repeat-password"
@@ -98,13 +100,13 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
               </div>
               {error && <p className="text-sm text-red-500">{error}</p>}
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? 'Creating an account...' : 'Sign up'}
+                {isLoading ? t('auth.creatingAccount') as string : t('common.signUp') as string}
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">
-              Already have an account?{' '}
+              {t('common.alreadyHaveAccount') as string}{' '}
               <Link href="/user/login" className="underline underline-offset-4">
-                Login
+                {t('common.login') as string}
               </Link>
             </div>
           </form>

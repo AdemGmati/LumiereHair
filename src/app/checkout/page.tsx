@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCheckout, type CheckoutItem } from "@/context/CheckoutContext";
 import { useCart } from "@/context/CartContext";
+import { useLanguage } from "@/i18n/LanguageProvider";
 
 const FREE_SHIPPING_THRESHOLD = 150;
 const TAX_RATE = 0.08;
@@ -31,18 +32,21 @@ const inputClass =
 
 type FieldName = "firstName" | "lastName" | "email" | "phone" | "city" | "state" | "zip";
 
-const FIELDS: { name: FieldName; label: string; placeholder: string; type?: string }[] = [
-  { name: "firstName", label: "First Name", placeholder: "Divyansh" },
-  { name: "lastName", label: "Last Name", placeholder: "Agarwal" },
-  { name: "email", label: "Email", placeholder: "you@example.com", type: "email" },
-  { name: "phone", label: "Phone Number", placeholder: "+1 555 123 4567", type: "tel" },
-  { name: "city", label: "City", placeholder: "Bangalore" },
-  { name: "state", label: "State", placeholder: "Karnataka" },
-  { name: "zip", label: "Zip Code", placeholder: "560021" },
-];
+function getFields(tStr: (path: string) => string): { name: FieldName; label: string; placeholder: string; type?: string }[] {
+  return [
+    { name: "firstName", label: tStr("checkout.fields.firstName"), placeholder: tStr("checkout.placeholders.firstName") },
+    { name: "lastName", label: tStr("checkout.fields.lastName"), placeholder: tStr("checkout.placeholders.lastName") },
+    { name: "email", label: tStr("checkout.fields.email"), placeholder: tStr("checkout.placeholders.email"), type: "email" },
+    { name: "phone", label: tStr("checkout.fields.phone"), placeholder: tStr("checkout.placeholders.phone"), type: "tel" },
+    { name: "city", label: tStr("checkout.fields.city"), placeholder: tStr("checkout.placeholders.city") },
+    { name: "state", label: tStr("checkout.fields.state"), placeholder: tStr("checkout.placeholders.state") },
+    { name: "zip", label: tStr("checkout.fields.zip"), placeholder: tStr("checkout.placeholders.zip") },
+  ];
+}
 
 export default function CheckoutPage() {
   const router = useRouter();
+  const { t, tStr, locale } = useLanguage();
   const { source, buyNowItem, clear: clearCheckout } = useCheckout();
   const { cartItems, clearCart } = useCart();
 
@@ -79,7 +83,7 @@ export default function CheckoutPage() {
     setSubmitError(null);
 
     if (items.length === 0) {
-      setSubmitError("Your checkout is empty.");
+      setSubmitError(tStr("common.checkoutEmptyInline"));
       return;
     }
 
@@ -141,24 +145,26 @@ export default function CheckoutPage() {
           : String(error);
 
       console.error("Failed to place order", error, errorDetails);
-      setSubmitError(`We couldn't place your order. ${errorDetails}`);
+      setSubmitError(`${tStr("common.orderError")} ${errorDetails}`);
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const fields = getFields(tStr);
+
   if (items.length === 0) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[#f8f6fc] px-4 text-center">
-        <p className="font-display text-2xl text-[#2d1b4e]">Your checkout is empty</p>
+        <p className="font-display text-2xl text-[#2d1b4e]">{t("checkout.empty.title") as string}</p>
         <p className="text-sm text-[#6b5280]">
-          Add something to your cart or hit Buy Now on a product to get started.
+          {t("checkout.empty.description") as string}
         </p>
         <Link
           href="/products"
           className="rounded-full bg-[#2d1b4e] px-6 py-2.5 text-sm font-bold uppercase tracking-wide text-white hover:bg-[#241640]"
         >
-          Browse Products
+          {t("checkout.empty.cta") as string}
         </Link>
       </div>
     );
@@ -169,12 +175,12 @@ export default function CheckoutPage() {
       <div className="mx-auto max-w-6xl">
         <nav className="mb-8 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide">
           <Link href="/cart" className="text-[#6b5280] hover:text-[#8b5cf6]">
-            Cart
+            {t("common.cart") as string}
           </Link>
-          <ChevronRight className="h-3.5 w-3.5 text-[#6b5280]/40" />
-          <span className="text-[#8b5cf6]">Shipping</span>
-          <ChevronRight className="h-3.5 w-3.5 text-[#6b5280]/40" />
-          <span className="text-[#6b5280]/50">Payment</span>
+          <ChevronRight className={`h-3.5 w-3.5 text-[#6b5280]/40 ${locale === "ar" ? "rotate-180" : ""}`} />
+          <span className="text-[#8b5cf6]">{t("checkout.breadcrumbs.shipping") as string}</span>
+          <ChevronRight className={`h-3.5 w-3.5 text-[#6b5280]/40 ${locale === "ar" ? "rotate-180" : ""}`} />
+          <span className="text-[#6b5280]/50">{t("checkout.breadcrumbs.payment") as string}</span>
         </nav>
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_400px]">
@@ -184,14 +190,15 @@ export default function CheckoutPage() {
             className="rounded-[28px] border border-[#efeaf9] bg-white p-6 shadow-[0_8px_30px_-12px_rgba(139,92,246,0.18)] sm:p-8"
           >
             <p className="text-xs font-bold uppercase tracking-wide text-[#8b5cf6]">
-              Checkout
+              {t("common.checkout") as string}
             </p>
             <h1 className="mt-1 font-display text-2xl text-[#2d1b4e] sm:text-3xl">
-              Shipping Address
+              {t("checkout.title") as string}
             </h1>
+            <p className="mt-1 text-sm text-[#6b5280]">{t("checkout.subtitle") as string}</p>
 
             <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
-              {FIELDS.map((field) => (
+              {fields.map((field) => (
                 <Field key={field.name} label={field.label}>
                   <Input
                     required
@@ -215,7 +222,7 @@ export default function CheckoutPage() {
           <aside className="h-fit rounded-[28px] border border-[#efeaf9] bg-white p-6 shadow-[0_8px_30px_-12px_rgba(139,92,246,0.18)] lg:sticky lg:top-6">
             <div className="mb-5 flex items-center justify-between">
               <h2 className="font-display text-xl text-[#2d1b4e]">
-                Your Cart{" "}
+                {t("checkout.summaryTitle") as string}{" "}
                 <span className="font-body text-sm font-normal text-[#6b5280]">
                   ({itemCount})
                 </span>
@@ -272,18 +279,18 @@ export default function CheckoutPage() {
 
             <dl className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <dt className="text-[#6b5280]">Subtotal</dt>
+                <dt className="text-[#6b5280]">{t("common.subtotal") as string}</dt>
                 <dd className="text-[#2d1b4e]">${subtotal.toFixed(2)}</dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-[#6b5280]">Shipping</dt>
+                <dt className="text-[#6b5280]">{t("common.shipping") as string}</dt>
                 <dd className="text-[#2d1b4e]">
-                  {shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}
+                  {shipping === 0 ? tStr("common.free") : `$${shipping.toFixed(2)}`}
                 </dd>
               </div>
               <div className="flex justify-between">
                 <dt className="flex items-center gap-1 text-[#6b5280]">
-                  Estimated tax
+                  {t("checkout.tax") as string}
                   <Info className="h-3.5 w-3.5" />
                 </dt>
                 <dd className="text-[#2d1b4e]">${tax.toFixed(2)}</dd>
@@ -293,7 +300,7 @@ export default function CheckoutPage() {
             <div className="my-4 h-px bg-[#efeaf9]" />
 
             <div className="flex items-baseline justify-between">
-              <span className="font-display text-lg text-[#2d1b4e]">Total</span>
+              <span className="font-display text-lg text-[#2d1b4e]">{t("common.total") as string}</span>
               <span className="font-display text-3xl text-[#2d1b4e]">
                 ${total.toFixed(2)}
               </span>
@@ -305,12 +312,12 @@ export default function CheckoutPage() {
               disabled={isSubmitting}
               className="mt-6 w-full rounded-2xl bg-[#2d1b4e] py-6 text-sm font-bold uppercase tracking-wide text-white hover:bg-[#241640] disabled:cursor-not-allowed disabled:opacity-70"
             >
-              {isSubmitting ? "Placing order..." : "Place order"}
+              {isSubmitting ? t("checkout.placingOrder") as string : t("checkout.placeOrder") as string}
             </Button>
 
             <p className="mt-5 flex items-center gap-1.5 border-t border-[#efeaf9] pt-4 text-xs text-[#6b5280]">
               <ShieldCheck className="h-3.5 w-3.5 text-[#8b5cf6]" />
-              Free shipping over ${FREE_SHIPPING_THRESHOLD} · Secure checkout
+              {t("checkout.secureText") as string}
             </p>
           </aside>
         </div>

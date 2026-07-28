@@ -10,5 +10,6 @@
   * { @apply border-[#ebe6f1]; }
   html { scroll-behavior: smooth; }
   body { @apply min-h-screen bg-[#fdfbfe] text-[#311b43] antialiased; font-family: var(--font-body); }
+  [dir="rtl"] body { font-family: var(--font-arabic), var(--font-body); }
   button, input { font: inherit; }
 }

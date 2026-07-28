@@ -1,57 +1,72 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ProductDetailsView } from "@/components/products/ProductDetailsView";
 import { ProductTile } from "@/components/products/ProductTile";
 import { getProductCategory } from "@/lib/products";
 import { createClient } from "@/lib/supabase/client";
 import type { Product } from "@/types/product";
+import { useLanguage } from "@/i18n/LanguageProvider";
 
 /** Dynamic Supabase product page with an interactive gallery and purchase controls. */
-export default async function ProductDetailsPage({
-  params,
-}: PageProps<"/products/[id]">) {
-  // 1. Extract route params and initialize Supabase client
-  const { id } = await params;
-  const supabase = await createClient();
+export default function ProductDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+  const { t } = useLanguage();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [catalogue, setCatalogue] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // 2. Fetch the primary product by ID
-  const { data, error } = await supabase
-    .from("products")
-    .select("*")
-    .eq("id", id)
-    .single();
+  useEffect(() => {
+    let active = true;
 
-  const product = data as Product | null;
+    async function load() {
+      const { id } = await params;
+      const supabase = createClient();
+      const { data, error } = await supabase.from("products").select("*").eq("id", id).single();
+      if (!active) return;
+      if (error || !data) {
+        setProduct(null);
+        setIsLoading(false);
+        return;
+      }
 
-  // 3. Fallback UI if the product doesn't exist or fetch fails
-  if (error || !product) {
+      const { data: allProducts } = await supabase.from("products").select("*").neq("id", id).limit(12);
+      if (!active) return;
+      setProduct(data as Product);
+      setCatalogue((allProducts ?? []) as Product[]);
+      setIsLoading(false);
+    }
+
+    load();
+    return () => {
+      active = false;
+    };
+  }, [params]);
+
+  if (isLoading) {
+    return <main className="min-h-[60vh] px-5 py-16 text-center">{t("common.loading") as string}</main>;
+  }
+
+  if (!product) {
     return (
       <main className="grid min-h-[60vh] place-items-center bg-[#fdfbfe] px-5 text-center">
         <div>
           <h1 className="font-display text-4xl font-semibold">
-            Product not found
+            {t("products.details.productNotFound") as string}
           </h1>
           <p className="mt-2 text-[#796782]">
-            Sorry, we couldn&apos;t find this product.
+            {t("products.details.productMissing") as string}
           </p>
           <Link
             href="/products"
             className="mt-6 inline-flex min-h-12 items-center rounded-full bg-violet-500 px-6 text-sm font-semibold text-white"
           >
-            Back to products
+            {t("common.backToProducts") as string}
           </Link>
         </div>
       </main>
     );
   }
-
-  // 4. Fetch additional products to display as recommendations
-  const { data: allProducts } = await supabase
-    .from("products")
-    .select("*")
-    .neq("id", id)
-    .limit(12);
-
-  const catalogue = (allProducts ?? []) as Product[];
 
   // 5. Filter for related products by category (fallback to general list if no matches)
   const related = catalogue
@@ -70,17 +85,17 @@ export default async function ProductDetailsPage({
         <div className="mb-7 flex items-end justify-between gap-4">
           <div>
             <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-violet-500">
-              Complete the look
+              {t("products.details.completeTheLook") as string}
             </p>
             <h2 className="font-display text-3xl font-semibold tracking-tight">
-              Related products
+              {t("products.details.related") as string}
             </h2>
           </div>
           <Link
             href="/products"
             className="text-sm font-semibold text-violet-500 hover:underline"
           >
-            View all →
+            {t("products.details.viewAll") as string} →
           </Link>
         </div>
 

@@ -1,18 +1,18 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { SectionHeading } from "./SectionHeading";
+import { useLanguage } from "@/i18n/LanguageProvider";
 
-const categories = [
-  ["Clip-Ins", "/products", "/Categorie-1.png"],
-  ["Ponytails", "/products", "/Categorie-2.png"],
-  ["Tape Wefts", "/products", "/Categorie-3.png"],
-  ["Bundles", "/products", "/Categorie-4.png"],
-] as const;
+const categoryImages = ["/Categorie-1.png", "/Categorie-2.png", "/Categorie-3.png", "/Categorie-4.png"] as const;
 
 export function Categories() {
+  const { t } = useLanguage();
+  const categories = ((t("home.categories.items") as string[]) ?? []).map((name, index) => [name, "/products", categoryImages[index]] as const);
   return (
     <section className="mx-auto max-w-300 px-5 pb-16 pt-6">
-      <SectionHeading eyebrow="Collections" title="Shop by category" />
+      <SectionHeading eyebrow={t("home.categories.eyebrow") as string} title={t("home.categories.title") as string} />
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {categories.map(([name, href, image]) => (
@@ -23,7 +23,7 @@ export function Categories() {
           >
             <Image
               src={image}
-              alt={`${name} hair extensions`}
+              alt={`${name} ${t("home.categories.imageAlt") as string}`}
               fill
               sizes="(max-width: 1024px) 50vw, 25vw"
               className="object-cover transition duration-500 group-hover:scale-105"
@@ -36,7 +36,7 @@ export function Categories() {
                 {name}
               </strong>
               <small className="text-xs font-semibold uppercase tracking-[.08em]">
-                Shop now
+                {t("home.categories.shopNow") as string}
               </small>
             </span>
           </Link>
